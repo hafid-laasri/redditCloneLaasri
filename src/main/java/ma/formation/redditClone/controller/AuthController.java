@@ -1,6 +1,7 @@
 package ma.formation.redditClone.controller;
 
 import lombok.AllArgsConstructor;
+import ma.formation.redditClone.dto.LoginRequest;
 import ma.formation.redditClone.dto.RegisterRequest;
 import ma.formation.redditClone.service.AuthService;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,10 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token){
         authService.verifyAccount(token);
         return new ResponseEntity<>("le compte est active avec succssee",HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public void login(@RequestBody LoginRequest loginRequest){
+        authService.login(loginRequest);
     }
 }

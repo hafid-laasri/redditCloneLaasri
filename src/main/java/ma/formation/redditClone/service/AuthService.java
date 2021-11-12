@@ -1,6 +1,7 @@
 package ma.formation.redditClone.service;
 
 import lombok.AllArgsConstructor;
+import ma.formation.redditClone.dto.LoginRequest;
 import ma.formation.redditClone.dto.RegisterRequest;
 import ma.formation.redditClone.exception.SpringRedditException;
 import ma.formation.redditClone.model.NotificationEmail;
@@ -8,11 +9,11 @@ import ma.formation.redditClone.model.User;
 import ma.formation.redditClone.model.VerificationToken;
 import ma.formation.redditClone.repository.UserRepository;
 import ma.formation.redditClone.repository.VerificationTokenRepository;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import javax.transaction.Transactional;
 import java.time.Instant;
@@ -26,6 +27,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -66,5 +68,10 @@ public class AuthService {
         User user =userRepository.findByUsername(username).orElseThrow(()->new SpringRedditException("utilisateur non disponible"+username));
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    public void login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(),loginRequest.getPassword()));
     }
 }
